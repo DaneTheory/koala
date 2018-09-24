@@ -2,7 +2,7 @@ const { resolve } = require('path')
 const file = ({ file }) => file.opts
 
 const commentEnd = ({ trailingComments = [] }) => trailingComments
-      .map(({ end }) => end)
+  .map(({ end }) => end)
 
 module.exports = (t, path, state, input) => {
   const { line, column } = path.node.loc.end
