@@ -6,6 +6,9 @@
   "scripts": {
     "test": "jest test"
   },
+  "bin": {
+    "koala": "./bin/koala.js"
+  },
   "author": "Dom Charlesworth <dgc336@gmail.com> (http://domcharlesworth.co.uk/)",
   "license": "MIT",
   "dependencies": {
