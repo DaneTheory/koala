@@ -1,22 +1,11 @@
-const { parse } = require('@babel/parser')
+const { hasKoalaComment, evalExpression } = require('./utils/comment-parsing')
 const get = require('./utils/path')
 
-const KOALA_SYMBOL = '?'
-
-const hasKoalaComment = it => it && it.some(koalaComment)
-const koalaComment = ({ value: s }) => s.trim().startsWith(KOALA_SYMBOL)
-const koalaExpression = ({ value: s }) => s.trim().slice(1)
-const evalExpression = ({ trailingComments }) => trailingComments
-  .filter(koalaComment)
-  .map(koalaExpression)
-  .filter(i => i)
-  .map(parse)
-
-module.exports = (types, path, state) => (logF, codeF, varF) => {
+module.exports = (types, path, state) => (insertF, logF, codeF, varF) => {
   if (!hasKoalaComment(get(['node', 'trailingComments'], path))) return
   const [ koalaCode ] = evalExpression(path.node)
 
-  path.insertAfter(
+  insertF(
     logF(
       koalaCode
         ? codeF(koalaCode)

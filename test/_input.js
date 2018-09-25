@@ -1,15 +1,10 @@
 const foo = 1
 const bar = 15
 
-const f = (a) => a + 10 - 2
-console.log('random console!') //?
+const f = (a) => a + 10 - 2 /* ? */
 
-const  p = {
-  a: { d: { e: { g: 1 } } },
-  c: 5
-} /* ?Object.assign(p, { d: 5 }) */
+const h = (b) => {
+  let a = 10
 
-f(10)/* ? */
-
-foo === bar // ?
-foo /* ?f(foo) */
+  return b + a /* ?h(10) */
+}
