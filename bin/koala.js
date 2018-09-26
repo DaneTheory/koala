@@ -1,7 +1,9 @@
 #!/usr/bin/env node
+const { exec } = require('child_process')
 const { resolve, dirname, basename } = require('path')
-const args = require('minimist')(process.argv.slice(2))
 const { createMonitor } = require('watch')
+const logUpdate = require('log-update')
+const args = require('minimist')(process.argv.slice(2))
 const shortid = require('shortid')
 
 const [ path = '' ] = args._
@@ -26,15 +28,28 @@ const cwd = process.cwd()
 const watchDir = resolve(cwd, path)
 const outDir = resolve(cwd, args['out-dir'] || args['o'])
 
-createMonitor(watchDir, { interval: 0.2 }, monitor => {
-  monitor.on('changed', f => {
-    const file = basename(f, '.js')
-    const outFile = f
-      .replace(watchDir, outDir)
-      .replace(file, shortid())
+const executeFile = f => {
+  const file = basename(f, '.js')
+  const outFile = f
+        .replace(watchDir, outDir)
+        .replace(file, shortid())
 
-    const command = `npx babel ${f} --out-file ${outFile} --plugins='babel-plugin-koala'`
+  const build = `npx babel ${f} --out-file ${outFile} --plugins='babel-plugin-koala'`
+  const run = `KOALA=true node ${outFile} | grep 🐨`
+  const clean = `rm ${outFile}`
 
-    console.log(command)
+  exec(build, (err, stdout) => {
+    if (err) errorAndQuit(err)
+    exec(run, (err, stdout) => {
+      logUpdate(stdout)
+      exec(clean)
+    })
   })
+
+}
+
+createMonitor(watchDir, { interval: 0.2 }, monitor => {
+  console.log('🐨 is now running!')
+  monitor.on('changed', executeFile)
+  monitor.on('created', executeFile)
 })
